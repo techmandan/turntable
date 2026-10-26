@@ -18,8 +18,7 @@ BarWidget {
       path = path.slice(0, path.length - 1)
     return path
   }
-  readonly property string backendBinPath: pluginDir + "/bin/turntable"
-  readonly property string setupPath: pluginDir + "/setup"
+  readonly property string backendBinPath: pluginDir + "/target/release/turntable"
   property bool bootstrapped: false
   property bool backendReady: false
 
@@ -298,7 +297,15 @@ BarWidget {
 
   Process {
     id: bootstrapProcess
-    command: [root.setupPath]
+    command: [
+      "cargo",
+      "build",
+      "--release",
+      "--manifest-path",
+      root.pluginDir + "/Cargo.toml",
+      "--target-dir",
+      root.pluginDir + "/target"
+    ]
     running: false
     onExited: function(exitCode) {
       if (exitCode === 0) {

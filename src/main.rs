@@ -5,8 +5,23 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 use std::thread;
 
-const ART_DIR: &str = "/tmp/turntable-cache/art";
-const CATALOG_FILE: &str = "/tmp/turntable-cache/catalog_cache.json";
+fn cache_base_dir() -> PathBuf {
+    if let Ok(xdg) = env::var("XDG_CACHE_HOME") {
+        if !xdg.trim().is_empty() {
+            return Path::new(&xdg).join("turntable");
+        }
+    }
+    let home = env::var("HOME").unwrap_or_else(|_| ".".to_string());
+    Path::new(&home).join(".cache/turntable")
+}
+
+fn art_dir_path() -> PathBuf {
+    cache_base_dir().join("art")
+}
+
+fn catalog_file_path() -> PathBuf {
+    cache_base_dir().join("catalog_cache.json")
+}
 
 // ============================================================================
 // Lightweight RFC 8259 JSON Parser & Serializer (Zero External Dependencies)
@@ -482,12 +497,12 @@ fn url_decode_path(s: &str) -> String {
 // ============================================================================
 
 fn ratings_file_path() -> PathBuf {
-    let home = env::var("HOME").unwrap_or_else(|_| "/tmp".to_string());
+    let home = env::var("HOME").unwrap_or_else(|_| ".".to_string());
     Path::new(&home).join(".local/share/turntable/ytm_ratings.json")
 }
 
 fn ensure_dirs() {
-    let _ = fs::create_dir_all(ART_DIR);
+    let _ = fs::create_dir_all(art_dir_path());
     if let Some(parent) = ratings_file_path().parent() {
         let _ = fs::create_dir_all(parent);
     }
@@ -719,7 +734,7 @@ fn handle_action(action: &str, title: &str, artist: &str) -> JsonVal {
 fn cache_local_mpris_art(art_url: &str, title: &str, artist: &str) -> String {
     ensure_dirs();
     let hash = fnv1a_hex(&format!("{}|{}", norm_key(title), norm_key(artist)));
-    let dst = Path::new(ART_DIR).join(format!("local_{}.img", hash));
+    let dst = art_dir_path().join(format!("local_{}.img", hash));
 
     if let Some(stripped) = art_url.strip_prefix("file://") {
         let src_path = url_decode_path(stripped);
@@ -751,7 +766,7 @@ fn cache_remote_art_url(remote_url: &str) -> String {
     }
     ensure_dirs();
     let hash = fnv1a_hex(remote_url);
-    let dst = Path::new(ART_DIR).join(format!("art_{}.jpg", hash));
+    let dst = art_dir_path().join(format!("art_{}.jpg", hash));
     if let Ok(meta) = fs::metadata(&dst) {
         if meta.is_file() && meta.len() > 256 {
             return format!("file://{}", dst.display());
@@ -1044,7 +1059,7 @@ fn format_itunes_track(r: &JsonVal) -> JsonVal {
 }
 
 fn load_catalog_cache() -> BTreeMap<String, JsonVal> {
-    if let Ok(content) = fs::read_to_string(CATALOG_FILE) {
+    if let Ok(content) = fs::read_to_string(catalog_file_path()) {
         if let Some(JsonVal::Obj(map)) = parse_json(&content) {
             return map;
         }
@@ -1054,10 +1069,11 @@ fn load_catalog_cache() -> BTreeMap<String, JsonVal> {
 
 fn save_catalog_cache(cache: BTreeMap<String, JsonVal>) {
     ensure_dirs();
-    let tmp = format!("{}.tmp", CATALOG_FILE);
+    let cat_path = catalog_file_path();
+    let tmp = cat_path.with_extension("json.tmp");
     let json = JsonVal::Obj(cache).to_json_string();
     if fs::write(&tmp, json).is_ok() {
-        let _ = fs::rename(&tmp, CATALOG_FILE);
+        let _ = fs::rename(&tmp, &cat_path);
     }
 }
 
