@@ -2,6 +2,12 @@
 
 An interactive **spinning vinyl turntable stage**, **10-track shifting record sleeve carousel**, **real-time PipeWire audio spectrum visualizer**, and **YouTube Music / MPRIS media controller** for the Omarchy top bar, powered by a zero-dependency **native Rust engine**.
 
+### Turntable Stage Overlay
+![Turntable Stage Overlay Preview](preview.png)
+
+### Top Bar Media Widget
+![Turntable Top Bar Widget Preview](preview-bar.png)
+
 ## Features
 - **Native Rust Audio & Queue Engine (`src/main.rs`)**: Compiled release binary (`bin/turntable`) with zero external crate dependencies:
   - **Real-Time 48-Band FFT Spectrum Streamer**: Captures live desktop audio from the default PipeWire / PulseAudio monitor source (`parec`) and streams logarithmically-spaced frequency bands and peak-hold indicators at ~43 FPS.
@@ -51,13 +57,13 @@ On first load, the plugin automatically runs `./setup` to build the release Rust
   - `-` / `_`: Dislike current track
   - `Escape`: Close overlay
 - **IPC commands**:
-  - `omarchy-shell ipc call turntable toggle`
-  - `omarchy-shell ipc call turntable open`
-  - `omarchy-shell ipc call turntable close`
-  - `omarchy-shell ipc call turntable shiftNext`
-  - `omarchy-shell ipc call turntable shiftPrev`
-  - `omarchy-shell ipc call turntable like`
-  - `omarchy-shell ipc call turntable dislike`
+  - `omarchy-shell turntable toggle`
+  - `omarchy-shell turntable open`
+  - `omarchy-shell turntable close`
+  - `omarchy-shell turntable shiftNext`
+  - `omarchy-shell turntable shiftPrev`
+  - `omarchy-shell turntable like`
+  - `omarchy-shell turntable dislike`
 
 ## Removal
 
