@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "turntable",
+  "name": "Turntable",
+  "version": "1.0.0",
+  "author": "techmandan",
+  "license": "MIT",
+  "description": "Interactive vinyl turntable stage, 10-track shifting sleeve carousel, real-time PipeWire audio spectrum visualizer, and YouTube Music / MPRIS media controller for Omarchy",
+  "kinds": [
+    "service",
+    "bar-widget"
+  ],
+  "keepLoaded": true,
+  "entryPoints": {
+    "service": "Service.qml",
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Turntable",
+    "description": "Live audio spectrum, MPRIS playback controls, and full-width spinning vinyl stage overlay",
+    "category": "Media",
+    "allowMultiple": false,
+    "defaultSection": "left"
+  }
+}

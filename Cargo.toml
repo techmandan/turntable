@@ -1,0 +1,18 @@
+[package]
+name = "turntable"
+version = "1.0.0"
+edition = "2021"
+authors = ["Tech Man Dan <dan.inman@hotmail.co.uk>"]
+description = "Zero-dependency native Rust engine for the Omarchy Turntable media bar & vinyl stage plugin"
+license = "MIT"
+
+[[bin]]
+name = "turntable"
+path = "src/main.rs"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true

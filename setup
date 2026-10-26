@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+root="$(cd "$(dirname "$0")" && pwd)"
+
+# Build release Rust binary and place in bin/
+cargo build --release --manifest-path "$root/Cargo.toml"
+mkdir -p "$root/bin"
+install -Dm755 "$root/target/release/turntable" "$root/bin/turntable"
+chmod +x "$root/bin/turntable" "$root/setup"
+
+echo "Turntable native Rust engine built and installed to $root/bin/turntable"
